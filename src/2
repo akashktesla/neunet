@@ -1,0 +1,21 @@
+#![allow(warnings)]
+use polars::prelude::*;
+use ndarray::prelude::*;
+use ndarray::Array2;
+
+fn main() {
+    let df = CsvReader::from_path("train.csv")
+        .unwrap()
+        .infer_schema(None)
+        .has_header(true)
+        .finish()
+        .unwrap();
+    println!("{:?}",df.head(Some(5)));
+    let array:Array2<i64> = df.to_ndarray::<Int64Type>(IndexOrder::C).unwrap();
+    let slice = array.slice(s![0..1000,..]).t();
+    let arrayt = slice.to_vec();
+    let y_dev = array.row(0);
+
+    // array.map(|s|println!("{}",s));
+
+}
