@@ -3,6 +3,7 @@ use polars::prelude::*;
 use ndarray::prelude::*;
 use ndarray::Array2;
 use rand::*;
+use rand::seq::SliceRandom;
 
 fn main() {
     let df = CsvReader::from_path("train.csv")
@@ -11,10 +12,10 @@ fn main() {
         .has_header(true)
         .finish()
         .unwrap();
-    println!("{:?}",df.head(Some(5)));
-    let rng = rand::thread_rng();
+    let mut rng = rand::thread_rng();
     let mut data:Array2<i64> = df.to_ndarray::<Int64Type>(IndexOrder::C).unwrap();
-    let slice = data.as_slice_mut();
+    data.as_slice_mut().unwrap().shuffle(&mut rng);
+    println!("data: {:?}",data);
 
     let a = data.shape();
     let m = a[0];
@@ -34,3 +35,5 @@ fn main() {
     println!("y_train: {:?}",y_train);
 
 }
+
+
